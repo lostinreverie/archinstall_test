@@ -12,9 +12,10 @@ echo -n "Repeat Password: "
 read -s password2
 echo
 [[ "$password1" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )  # Überprüfen, ob Passwörter übereinstimmen
-sfdisk -l
-echo -n "Choose the disk for your Operating System: "
-read device
+
+devicelist=$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tac)
+device=$(dialog --stdout --menu "Select installation disk" 0 0 0 ${devicelist}) || exit 1
+
 
 #################### FESTPLATTE AUFSETZEN ####################
 ## Partitionen konfigurieren
