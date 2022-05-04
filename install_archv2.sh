@@ -12,6 +12,9 @@ echo -n "Repeat Password: "
 read -s password2
 echo
 [[ "$password1" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )  # Überprüfen, ob Passwörter übereinstimmen
+sfdisk -l
+echo -n "Choose the disk for your Operating System: "
+read device
 
 #################### FESTPLATTE AUFSETZEN ####################
 ## Partitionen konfigurieren
