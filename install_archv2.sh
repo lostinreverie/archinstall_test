@@ -20,7 +20,7 @@ echo "CREATING PARTITIONS..."
 parted -s "${device}" -- mklabel gpt \
 ##  mkpart PART-TYPE [FS-TYPE] START END        # Erstellt eine Partition. Optional mit Filesystem
     mkpart ESP fat32 1MiB 301MiB \   # Boot-Partition 300 MiB
-    set 1 esp on \
+    set 1 boot on \
     mkpart primary linux-swap 301MiB 2349MiB ${swap_end} \  # Swap-Partition 2048 MiB (Ablage-Ort auf der Festplatte für den RAM)
     mkpart primary ext4 ${swap_end} 100%                    # Haupt-Partition
 
