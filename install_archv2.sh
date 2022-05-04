@@ -12,10 +12,9 @@ echo -n "Repeat Password: "
 read -s password2
 echo
 [[ "$password1" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )  # Überprüfen, ob Passwörter übereinstimmen
-
-devicelist=$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tac)
-device=$(dialog --stdout --menu "Select installation disk" 0 0 0 ${devicelist}) || exit 1
-
+echo
+echo -n "Choose the Partition for your OS. (/dev/sda for Example): "
+read device
 
 #################### FESTPLATTE AUFSETZEN ####################
 ## Partitionen konfigurieren
@@ -25,25 +24,19 @@ parted -s "${device}" -- mklabel gpt \
 ##  mkpart PART-TYPE [FS-TYPE] START END        # Erstellt eine Partition. Optional mit Filesystem
     mkpart ESP fat32 1MiB 301MiB \   # Boot-Partition 300 MiB
     set 1 boot on \
-    mkpart primary linux-swap 301MiB 2349MiB ${swap_end} \  # Swap-Partition 2048 MiB (Ablage-Ort auf der Festplatte für den RAM)
-    mkpart primary ext4 ${swap_end} 100%                    # Haupt-Partition
-
-## Erstellen einer Referenz, um die Partitionen zu formatieren.
-## Hierebi gibt es zwei verschiedene Geräte-Typen, zwischen denen unterschieden werden muss.
-## Es gibt ${device}1 oder ${device}p1
-## Mit ls und grep kann der Geräte-Typ herausgefiltert werden
-part_boot="$(ls ${device}* | grep -E "^${device}p?1$")"
+    mkpart primary linux-swap 301MiB 2349MiB \  # Swap-Partition 2048 MiB (Ablage-Ort auf der Festplatte für den RAM)
+    mkpart primary ext4 2349MiB 100%            # Haupt-Partition
 
 ## Partitionen erstellen
-mkfs.vfat -F32 "${part_boot}"
-mkswap "${part_swap}"
-mkfs.f2fs -f "${part_root}"
+mkfs.vfat -F32 "${device}1"
+mkswap "${device}2"
+mkfs.f2fs -f "${device}3"
 
 ## Partitionen mounten
-swapon "${part_swap}"
-mount "${part_root}" /mnt
+swapon "${device}2"
+mount "${device}3" /mnt
 mkdir /mnt/boot
-mount "${part_boot}" /mnt/boot
+mount "${device}1" /mnt/boot
 echo "PARTITIONS HAVE BEEN CREATED!"
 
 #################### LINUX GRUNDSYSTEM UND BOOTLOADER INSTALLIEREN ####################
