@@ -11,7 +11,7 @@ echo
 echo -n "Repeat Password: "
 read -s password2
 echo
-[[ "$password1"=="$password2"]] || ( echo "Passwords did not match"; exit 1; )  # Überprüfen, ob Passwörter übereinstimmen
+[[ "$password1" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )  # Überprüfen, ob Passwörter übereinstimmen
 
 #################### FESTPLATTE AUFSETZEN ####################
 ## Partitionen konfigurieren
@@ -46,6 +46,7 @@ echo "PARTITIONS HAVE BEEN CREATED!"
 echo
 echo "INSTALLING LINUX FIRMWARE"
 pacstrap -i /mnt base linux linux-firmware vim nano
+echo "FIRMWARE HAS BEEN INSTALLED!"
 ## Bootloader erstellen
 genfstab -U /mnt >> /mnt/etc/fstab      # genfstab erstellt eine fstab-Datei durchs automatische erkennen aller aktiven Mounts, beim angegebenen Mount-Point (/mnt).
                                         # Anschließend werden diese in fstab-kompatiblen Format als Standard-Ausgabe deklariert.
