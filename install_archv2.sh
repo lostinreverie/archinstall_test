@@ -12,6 +12,7 @@ echo -n "Repeat Password: "
 read -s password2
 echo
 [[ "$password1" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )  # Überprüfen, ob Passwörter übereinstimmen
+fdisk -l
 echo
 echo -n "Choose the Partition for your OS. (/dev/sda for Example): "
 read device
@@ -21,12 +22,11 @@ read device
 echo
 echo "CREATING PARTITIONS..."
 parted -s "${device}" -- mklabel gpt \
-##  mkpart PART-TYPE [FS-TYPE] START END        # Erstellt eine Partition. Optional mit Filesystem
     mkpart "EFI system partition" fat32 1MiB 301MiB \   # Boot-Partition 300 MiB
     set 1 esp on \
     mkpart primary linux-swap 301MiB 2349MiB \  # Swap-Partition 2048 MiB (Ablage-Ort auf der Festplatte für den RAM)
     mkpart primary ext4 2349MiB 100%            # Haupt-Partition
-
+##  mkpart PART-TYPE [FS-TYPE] START END        # Erstellt eine Partition. Optional mit Filesystem
 ## Partitionen erstellen
 mkfs.vfat -F32 "${device}1"
 mkswap "${device}2"
